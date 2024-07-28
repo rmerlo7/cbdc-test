@@ -11,22 +11,27 @@ Antes de iniciar debes tener instalado truffle y ganache
 git clone 
 ```
 
-2. Instalar dependencias
+2. Configurar archivos
+Copiar los archivos `addresses.json.sample` y `alias.json.sample` -> renombrar a `addresses.json` y `alias.json` respectivamente.
+
+Configurar el archivos `addresses.json` con las direcciones y llaves privadas de las cuentas de ganache (`address->private`).
+
+3. Instalar dependencias
 ```sh
 npm install
 ```
 
-3. Compilar los contratos
+4. Compilar los contratos
 ```sh
 truffle compile --all
 ```
 
-4. Desplegar el contrato en ganache
+5. Desplegar el contrato en ganache
 ```
 truffle migrate --network development
 ```
 
-5. Iniciar el proyecto 
+6. Iniciar el proyecto 
 ```
 node app.js
 ```
@@ -72,7 +77,7 @@ curl --request POST \
 	"alias": "c2",
 	"document": "1234567"
 }'
-``
+```
 
 * obtener usuarios
 ```
@@ -80,5 +85,3 @@ curl --request GET \
   --url http://localhost:3000/usuarios/c2 \
   --header 'Content-Type: application/json'
 ```
-
-** Nota, debes configurar los archivos `addresses.json` con las direcciones y llaves privadas de las cuentas de ganache **

@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "4.5.0",
+    "web3": "^1.7.3"
+  }
+}

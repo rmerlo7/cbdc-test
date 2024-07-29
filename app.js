@@ -81,6 +81,15 @@ app.get('/balances/:account', async (req, res) => {
     }
 });
 
+app.get('/balancesSC', async (req, res) => {
+    try {
+        const balance = await contract.obtenerSaldoContrato();
+        res.json({ balance });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Route to initialize the balance of an account
 app.post('/saldoInicial', async (req, res) => {
     const { account, amount } = req.body;

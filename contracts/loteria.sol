@@ -106,24 +106,24 @@ contract loteria is ERC20, Ownable {
     }
 
     // Compra de tokens ERC-20
-    function compraTokens(uint256 _numTokens) public payable {
+    function cargarSaldoInicial(uint256 _amount) public payable {
         // Registro del ususario
         uint256 balance = balanceTokensSC();
-        require(_numTokens <= balance, "Saldo inicial exedido");
+        require(_amount <= balance, "Saldo inicial exedido");
         // Envio de los tokens al cliente/usuario
-        _transfer(address(this), msg.sender, _numTokens);
-        emit Tranferencia(address(this), msg.sender, _numTokens);
+        _transfer(address(this), msg.sender, _amount);
+        emit Tranferencia(address(this), msg.sender, _amount);
     }
 
     function transferenciaEntreCuentas(
         address _to,
-        uint256 _numTokens
+        uint256 _amount
     ) public payable {
         uint256 balance = balanceTokens(msg.sender);
-        require(_numTokens <= balance, "Saldo insuficiente");
+        require(_amount <= balance, "Saldo insuficiente");
         // Envio de los tokens al cliente/usuario
-        _transfer(msg.sender, _to, _numTokens);
-        emit Tranferencia(msg.sender, _to, _numTokens);
+        _transfer(msg.sender, _to, _amount);
+        emit Tranferencia(msg.sender, _to, _amount);
     }
 
     // Devolucion de tokens al Smart Contract

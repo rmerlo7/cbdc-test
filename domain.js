@@ -31,11 +31,12 @@ const crearCuenta = async (params) => {
             const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
             const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
             console.log('Transaction receipt:', receipt);
+            return receipt;
         };
 
-        await createTransaction();
+        const result = await createTransaction();
         await showEvents();
-        return { result: 'ok' };
+        return { result: 'ok', data: { transactionHash: result.transactionHash, blockNumber: result.blockNumber} };
     } catch (error) {
         console.error('Error al llamar al método del contrato:', error);
         throw error;
@@ -88,7 +89,7 @@ const abonarSaldoInicial = async (privateKey, numTokens) => {
     const { web3, contract, contractAddress } = await getInstanceContract();
     try {
         const account = getAddressFromPrivateKey(web3, privateKey);
-        const method = contract.methods.compraTokens(numTokens);
+        const method = contract.methods.cargarSaldoInicial(numTokens);
 
         const createTransaction = async () => {
             const tx = {
@@ -101,12 +102,13 @@ const abonarSaldoInicial = async (privateKey, numTokens) => {
             const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
             const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
             console.log('Transaction receipt:', receipt);
+            return receipt;
         };
 
-        await createTransaction();
+        const result = await createTransaction();
         await showEvents();
 
-        return { result: 'ok' };
+        return { result: 'ok', data: { transactionHash: result.transactionHash, blockNumber: result.blockNumber} };
     } catch (error) {
         console.error('Error al llamar al método del contrato:', error);
         throw error;
@@ -131,12 +133,13 @@ const transferenciaEntreCuentas = async (privateKey, addressTo, numTokens) => {
 
             const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
             console.log('Transaction receipt:', receipt);
+            return receipt;
         };
 
-        await createTransaction();
+        const result = await createTransaction();
         await showEvents();
 
-        return { result: 'ok' };
+        return { result: 'ok', data: { transactionHash: result.transactionHash, blockNumber: result.blockNumber} };
     } catch (error) {
         console.error('Error al llamar al método del contrato:', error);
         throw error;

@@ -44,7 +44,7 @@ const crearCuenta = async (params) => {
 }
 
 const obtenerCuenta = async (add) => {
-    console.log('[obtenerCuenta] cuenta: ', add);
+    // console.log('[obtenerCuenta] cuenta: ', add);
     const { contract } = await getInstanceContract();
     try {
         const result = await contract.methods.getUser(add).call(); 

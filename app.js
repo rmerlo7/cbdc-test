@@ -19,11 +19,11 @@ const app = express();
 const server = http.createServer(app);
 const io = new SocketServer(server, {
     cors: {
-        origin: "http://192.168.96.67:3001",
+        origin: "http://192.168.96.77:3001",
     },
 });
 
-const socketCliente = ioCliente("http://192.168.96.67:3000");
+const socketCliente = ioCliente("http://192.168.96.77:3000");
 
 app.use(cors());
 
@@ -71,7 +71,9 @@ app.post('/usuarios', async (req, res) => {
             }
             console.log('Clave eliminada y archivo actualizado correctamente.');
         });
+        socketCliente.emit("message", receipt.body);
         res.json(receipt);
+
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -130,6 +132,7 @@ app.post('/saldoInicial', async (req, res) => {
         const privatess = aliasJson[account]?.private;
         console.log(privatess)
         const receipt = await contract.abonarSaldoInicial(privatess, amount);
+        socketCliente.emit("message", receipt.body);
         res.json(receipt);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -145,8 +148,8 @@ app.post('/transferencias', async (req, res) => {
         const receipt = await contract.transferenciaEntreCuentas(privatess, addressTo, amount);
 
         socketCliente.emit("message", receipt.body);
-        // console.log(JSON.stringify(usuarioConsulta))
-        socketCliente.emit("transferencia", {"aliasx":addressTo});
+        console.log(to)
+        socketCliente.emit("transferencia", {"aliasx":to});
 
         res.json(receipt);
     } catch (error) {

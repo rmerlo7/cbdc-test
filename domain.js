@@ -14,16 +14,12 @@ const getInstanceContract = async () => {
 }
 
 const crearCuenta = async (params) => {
-    console.log('------------------------------------');
-    console.log(params);
-    console.log('------------------------------------');
+    console.log('[crearCuenta] params: ', params);
     const { address, privateKey, name, alias, document } = params;
     const { web3, contract, contractAddress } = await getInstanceContract();
     try {
         const method = contract.methods.createUser(address, name, document, alias);
 
-        // Create and sign the transaction
-        // 6721976
         const createTransaction = async () => {
             const tx = {
                 from: address,
@@ -33,29 +29,27 @@ const crearCuenta = async (params) => {
             };
 
             const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
-
-            // Send the transaction
             const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
             console.log('Transaction receipt:', receipt);
         };
 
-        // Execute the transaction
-        await createTransaction().catch(console.error);
-
+        await createTransaction();
+        await showEvents();
         return { result: 'ok' };
     } catch (error) {
         console.error('Error al llamar al método del contrato:', error);
-        return error;
+        throw error;
     }
 }
 
 const obtenerCuenta = async (add) => {
+    console.log('[obtenerCuenta] cuenta: ', add);
     const { contract } = await getInstanceContract();
     try {
         const result = await contract.methods.getUser(add).call(); 
         return result;
     } catch (error) {
-        return error;
+        throw error;
     }
 }
 
@@ -64,7 +58,7 @@ const obtenerCuentas = async () => {
     try {
         return await web3.eth.getAccounts();
     } catch (error) {
-        return error;
+        throw error;
     }
 }
 
@@ -75,7 +69,7 @@ const obtenerSaldo = async (account) => {
         return result;
     } catch (error) {
         console.error('Error al llamar al método del contrato:', error);
-        return error;
+        throw error;
     }
 };
 
@@ -86,18 +80,16 @@ const obtenerSaldoContrato = async () => {
         return result;
     } catch (error) {
         console.error('Error al llamar al método del contrato:', error);
-        return error;
+        throw error;
     }
 };
 
 const abonarSaldoInicial = async (privateKey, numTokens) => {
     const { web3, contract, contractAddress } = await getInstanceContract();
     try {
-        // Define the method and parameter
         const account = getAddressFromPrivateKey(web3, privateKey);
         const method = contract.methods.compraTokens(numTokens);
 
-        // Create and sign the transaction
         const createTransaction = async () => {
             const tx = {
                 from: account,
@@ -107,14 +99,13 @@ const abonarSaldoInicial = async (privateKey, numTokens) => {
             };
 
             const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
-
-            // Send the transaction
             const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
             console.log('Transaction receipt:', receipt);
         };
 
-       
-        await createTransaction()
+        await createTransaction();
+        await showEvents();
+
         return { result: 'ok' };
     } catch (error) {
         console.error('Error al llamar al método del contrato:', error);
@@ -125,11 +116,9 @@ const abonarSaldoInicial = async (privateKey, numTokens) => {
 const transferenciaEntreCuentas = async (privateKey, addressTo, numTokens) => {
     const { web3, contract, contractAddress } = await getInstanceContract();
     try {
-        // Define the method and parameter
         const addressFrom = getAddressFromPrivateKey(web3, privateKey);
         const method = contract.methods.transferenciaEntreCuentas(addressTo, numTokens);
 
-        // Create and sign the transaction
         const createTransaction = async () => {
             const tx = {
                 from: addressFrom,
@@ -140,18 +129,17 @@ const transferenciaEntreCuentas = async (privateKey, addressTo, numTokens) => {
 
             const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
 
-            // Send the transaction
             const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
             console.log('Transaction receipt:', receipt);
         };
 
-        // Execute the transaction
-        await createTransaction().catch(console.error);
+        await createTransaction();
+        await showEvents();
 
         return { result: 'ok' };
     } catch (error) {
         console.error('Error al llamar al método del contrato:', error);
-        return error;
+        throw error;
     }
 };
 
@@ -160,26 +148,64 @@ const getAddressFromPrivateKey = (web3, privateKey) => {
     return account.address;
 };
 
-// (async () => {
-//     const accounts = await obtenerCuentas();
-//     console.log('accounts: ', accounts);
+const showEvents = async () => {
+    const { contract } = await getInstanceContract();
+    const events = await contract.getPastEvents('allEvents', { fromBlock: 0, toBlock: 'latest' });
+    console.log('events: ', events);
+}
 
-//     const privateKey = '0x224c3cb5bd28ec879f73f5dcc08f36255bbd84f4e7b35db9fd9e96c1929a4004';
-//     const privateKey2 = '0x511fdfda22a87be0eade193f4be0ff424b83a9ccb38b9820fb8e17c49ccefc31';
+const parseTxData = async (blockNumber) => {
+    const result = {}
+    try {
+        // Obtener el bloque por número
+        const { web3, contract } = await getInstanceContract();
+        const block = await web3.eth.getBlock(blockNumber, true); // true para obtener las transacciones completas
 
-//     await abonarSaldoInicial(privateKey, '100');
-//     await abonarSaldoInicial(privateKey2, '10');
+        if (!block) {
+            console.log(`Block ${blockNumber} not found`);
+            return;
+        }
 
-//     await transferenciaEntreCuentas(privateKey, accounts[1], '2');
+        console.log(`Block ${blockNumber} data:`, block);
 
-//     const saldoContrato = await obtenerSaldoContrato();
-//     console.log('saldoCOntrato: ', saldoContrato);
+        // Analizar las transacciones del bloque
+        block.transactions.forEach(tx => {
+            result.txHash = tx.hash;
+            result.from = tx.from;
+            result.to = tx.to;
+            result.value = web3.utils.fromWei(tx.value, 'ether');
+            result.gas = tx.gas;
+            result.gasPrice = web3.utils.fromWei(tx.gasPrice, 'gwei');
+            result.data = tx.input;
 
-//     const saldoC1 = await obtenerSaldo(accounts[0]);
-//     console.log('saldoCuenta: ', saldoC1);
-//     const saldoC2 = await obtenerSaldo(accounts[1]);
-//     console.log('saldoCuenta2: ', saldoC2);
-// })();
+            // Decodificar tx.input
+            if (tx.input !== '0x') {
+                try {
+                    const functionSignature = tx.input.slice(0, 10);
+                    result.functionSignature = functionSignature;
+                    const functionAbi = contract.options.jsonInterface.find(item => item.signature === functionSignature);
+                    result.functionAbi = functionAbi?.name;
+                    if (functionAbi) {
+                        const decodedParameters = web3.eth.abi.decodeParameters(functionAbi.inputs, tx.input.slice(10));
+                        result.decodedParameters = decodedParameters;
+                    } else {
+                        console.log('Function signature not found in ABI');
+                    }
+                } catch (error) {
+                    console.error('Error decoding input:', error);
+                }
+            } else {
+                console.log('Data: No input data');
+            }
+            console.log('-----------------BLOCK------------------');
+            console.log(result);
+            console.log('-----------------------------------');
+        });
+        return result;
+    } catch (error) {
+        console.error('Error fetching block:', error);
+    }
+};
 
 module.exports = {
     obtenerCuentas,
@@ -188,5 +214,6 @@ module.exports = {
     abonarSaldoInicial,
     transferenciaEntreCuentas,
     crearCuenta,
-    obtenerCuenta
+    obtenerCuenta,
+    parseTxData
 }

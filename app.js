@@ -1,6 +1,3 @@
-// import http from "http";
-// import { Server as SocketServer } from "socket.io";
-
 const fs = require('fs');
 
 const path = require('path');
@@ -165,6 +162,17 @@ app.get('/balancesSC', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+app.get('/blocks/:blockNumber', async (req, res) => {
+    try {
+        const { blockNumber } = req.params;
+        const result = await contract.parseTxData(blockNumber);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //++++++++++++++++++++++++++++++++++web socket++++++++++++++++++++++++++++++++

@@ -22,6 +22,9 @@ contract loteria is ERC20, Ownable {
     mapping(address => User) private users;
     mapping(address => bool) private usersInit;
 
+    event UserCreated(address indexed userAddress, string name, string document, string aliasx);
+    event Tranferencia(address from, address to, uint256 amount);
+
     // Constructor
     constructor() ERC20("Bolivianos", "Bs") {
         _mint(address(this), 1000000000000);
@@ -44,6 +47,7 @@ contract loteria is ERC20, Ownable {
         // crear usuario si no existe
         users[_add] = User(_name, _document, _aliasx);
         usersInit[_add] = true;
+        emit UserCreated(_add, _name, _document, _aliasx);
         return _add;
     }
 
@@ -108,6 +112,7 @@ contract loteria is ERC20, Ownable {
         require(_numTokens <= balance, "Saldo inicial exedido");
         // Envio de los tokens al cliente/usuario
         _transfer(address(this), msg.sender, _numTokens);
+        emit Tranferencia(address(this), msg.sender, _numTokens);
     }
 
     function transferenciaEntreCuentas(
@@ -118,6 +123,7 @@ contract loteria is ERC20, Ownable {
         require(_numTokens <= balance, "Saldo insuficiente");
         // Envio de los tokens al cliente/usuario
         _transfer(msg.sender, _to, _numTokens);
+        emit Tranferencia(msg.sender, _to, _numTokens);
     }
 
     // Devolucion de tokens al Smart Contract

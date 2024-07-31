@@ -1,0 +1,18 @@
+{
+  "oscar": {
+    "address": "0xd1364FaeB0dB539e28554F98443363Cf6eAaeFc5",
+    "private": "0xa4d163884f9d4b08066caffd3d2a19579b1087438e0e615dac8fb22582977385"
+  },
+  "rquispe": {
+    "address": "0x213F01985f1DA18A89395E46bEf59e377D1Aa2EE",
+    "private": "0x8e251db4ce8dfb439602f51b615a8e54aeb09389027c136b650941e8617103af"
+  },
+  "p26": {
+    "address": "0x3be96b9bB2C16209bE960CF6c4cbbdAC70ced8Ef",
+    "private": "0xb685c34db37b6fc0409ee6a46f06894ec56412ffda212e328831d36ed59e9074"
+  },
+  "p29": {
+    "address": "0x0aa9AB0cDCda2358e4164c88C4DDE47475D43e8b",
+    "private": "0xbe7b2859bf49e774e2a829dd9fabe9f5540433d55da9f33cb8e28e0d1e703cef"
+  }
+}
